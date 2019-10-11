@@ -232,17 +232,17 @@ begin
       sndEmail.AltBody.Add(
          'Lista de Cadastros.' + sLineBreak +
          'Total de Registros: ' + Query.RecordCount.ToString() + sLineBreak +
-         'Data e hora de Envio: ' + FormatDateTime('dd/mm/yyy hh:mm:ss', Now)
+         'Data e hora de Envio: ' + FormatDateTime('dd/mm/yyy - hh:mm:ss', Now)
       );
 
       sndEmail.AddAttachment('Clientes.xml', 'Cadastros de Clientes');
       sndEmail.Send();
 
-      Application.MessageBox('E-mail enviado com sucesso.','TechCore-RTG',mb_IconInformation or mb_Ok);
+      Application.MessageBox('E-mail enviado com sucesso.','Atenção!',mb_IconInformation or mb_Ok);
 
    except
       on e:exception do
-         Application.MessageBox('Erro ao enviar o e-mail.','TechCore-RTG',mb_IconInformation or mb_Ok);
+         Application.MessageBox('Erro ao enviar o e-mail.','Atenção!',mb_IconInformation or mb_Ok);
    end;
 end;
 
@@ -428,6 +428,7 @@ var
    JSONObj  : TJSONObject;
    jValue   : TJSOnValue;
    ClassCep : TCep;
+   teste : string;
 begin
 
    TEdit(Sender).Color := clWindow;
@@ -457,6 +458,14 @@ begin
             // Checa o retorno da conexão
             if HttpCon.Response.ResponseCode = 200 then
             begin
+
+               if Pos('"erro": true', Utf8ToAnsi(Response.DataString)) <> 0
+               then
+               begin
+                  Application.MessageBox('CEP informado não foi encontrado, tente novamente','Atenção!',mb_IconStop or mb_ok);
+                  edCep.SetFocus;
+                  exit;
+               end;
 
                JSONObj := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes( Utf8ToAnsi(Response.DataString)),0) as TJSONObject;
 
@@ -607,7 +616,7 @@ begin
    aQuery.Refresh;
 
    // Aviso ao usuário
-   Application.MessageBox('Cadastro efetuado com sucesso.','Atenção!',mb_IConInformation or mb_Ok);
+   Application.MessageBox('Dados gravados com sucesso.','Atenção!',mb_IConInformation or mb_Ok);
 end;
 
 procedure TFrMain.QueryBeforeCancel(DataSet: TDataSet);
@@ -657,23 +666,48 @@ begin
    end;
 
    // Confere se o CPF informado já existe na base de dados
-   try
-      xQuery.Close;
-      xQuery.SQL.Clear;
-      xQuery.SQL.Add('SELECT 1 FROM AQUERY WHERE CPF=:CPF');
-      xQuery.ParamByName('cpf').AsString := OnlyNumber(edCpf.Text);
-      xQuery.Open();
+   if Query.State = dsInsert then
+   begin
+      try
+         xQuery.Close;
+         xQuery.SQL.Clear;
+         xQuery.SQL.Add('SELECT 1 FROM AQUERY WHERE CPF=:CPF');
+         xQuery.ParamByName('cpf').AsString := OnlyNumber(edCpf.Text);
+         xQuery.Open();
 
-      if not xQuery.IsEmpty then
-      begin
-         Application.MessageBox('O CPF informado já se encontra cadastrado para outro cliente.','Atenção!',mb_IconStop or mb_ok);
-         edCpf.SetFocus;
-         Abort;
+         if not xQuery.IsEmpty then
+         begin
+            Application.MessageBox('O CPF informado já se encontra cadastrado para outro cliente.','Atenção!',mb_IconStop or mb_ok);
+            edCpf.SetFocus;
+            Abort;
+         end;
+      finally
+         xQuery.Close;
       end;
-   finally
-      xQuery.Close;
    end;
 
+   if Query.State = dsEdit then
+   begin
+      try
+         xQuery.Close;
+         xQuery.SQL.Clear;
+         xQuery.SQL.Add('SELECT CODIGO,CPF FROM AQUERY WHERE CPF=:CPF');
+         xQuery.ParamByName('cpf').AsString := OnlyNumber(edCpf.Text);
+         xQuery.Open();
+
+         if not xQuery.IsEmpty then
+         begin
+            if (xQuery.FieldByName('cpf').AsString = OnlyNumber(edCpf.Text)) and (xQuery.FieldByName('codigo').AsInteger <> StrToInt(edCodigo.Text)) then
+            begin
+               Application.MessageBox('O CPF informado já se encontra cadastrado para outro cliente.','Atenção!',mb_IconStop or mb_ok);
+               edCpf.SetFocus;
+               Abort;
+            end;
+         end;
+      finally
+         xQuery.Close;
+      end;
+   end;
 end;
 
 procedure TFrMain.RzDialogButtons1ClickCancel(Sender: TObject);
