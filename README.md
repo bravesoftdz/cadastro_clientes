@@ -12,3 +12,5 @@ em retorno JSON.
 Utilizado componente ACBrMail para o envio dos registro via e-mail, em anexo um arquivo xml contendo todos os registro efetuados.
 
 Criado arquivo ini de apoio a parametrização dinâmica do servidor smtp.
+
+Utilizado o componente ActionManager para dinamizar os menus da aplicação
