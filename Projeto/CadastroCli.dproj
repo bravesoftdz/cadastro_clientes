@@ -78,6 +78,7 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_Keys>CompanyName=Winston Moreira;FileDescription=Cadastro de Clientes;FileVersion=1.0.0.0;InternalName=CadastroCli;LegalCopyright=;LegalTrademarks=;OriginalFilename=CadastroCli;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_DebugInfoInExe>false</DCC_DebugInfoInExe>
         <Icon_MainIcon>CadastroCli_Icon.ico</Icon_MainIcon>
         <DCC_UnitSearchPath>G:\Cadastro_Clientes\Projeto;G:\Cadastro_Clientes\Projeto\UNITS;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
@@ -86,7 +87,7 @@
         <AppEnableHighDPI>true</AppEnableHighDPI>
         <DCC_BplOutput>G:\Cadastro_Clientes\Projeto\DCUS\</DCC_BplOutput>
         <DCC_DcuOutput>G:\Cadastro_Clientes\Projeto\UNITS\</DCC_DcuOutput>
-        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Locale>1046</VerInfo_Locale>
         <DCC_ExeOutput>G:\Cadastro_Clientes\Debug\</DCC_ExeOutput>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
